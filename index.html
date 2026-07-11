@@ -92,7 +92,13 @@ label.fld span{display:block; font-size:.72rem; color:var(--muted); margin-botto
 #savedList th{padding:4px 5px; text-align:left; color:var(--gold); font-size:.72rem; text-transform:uppercase; letter-spacing:1.5px; font-family:var(--font-display)}
 .toolbar{display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 0}
 .biglogo{font-size:3rem; text-align:center; margin-bottom:6px}
+.suite-nav{max-width:1180px; margin:14px auto -8px; padding:0 20px; display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+.suite-nav .sn-lbl{font-family:var(--font-display); font-size:.68rem; letter-spacing:2px; color:var(--muted)}
+.suite-nav a{background:linear-gradient(180deg,#2c2216,#241b10); border:1px solid var(--border); border-radius:20px; padding:5px 14px; font-size:.8rem; color:var(--ink); text-decoration:none; font-family:var(--font-display); transition:all .15s}
+.suite-nav a:hover{border-color:var(--gold); color:var(--gold-l)}
+.suite-nav a.on{background:linear-gradient(180deg,#a13636,#7a2626); border-color:#c95454; color:#fff; pointer-events:none}
 @media print{
+  .suite-nav{display:none !important}
   body{background:#fff}
   .app-header,.toolbar,.panel,.rr{display:none !important}
   .npc-wrap{display:block}
@@ -110,6 +116,13 @@ label.fld span{display:block; font-size:.72rem; color:var(--muted); margin-botto
     <button class="btn gold" onclick="genNpc()">🎲 Genera NPC</button>
   </div>
 </header>
+<nav class="suite-nav">
+  <span class="sn-lbl">SUITE D&amp;D 5E</span>
+  <a href="https://dcamuti.github.io/dnd5e-tool-characters/">⚔️ Schede PG</a>
+  <a class="on" href="https://dcamuti.github.io/dnd5e-tool-npcs/">🎭 NPC</a>
+  <a href="https://dcamuti.github.io/dnd5e-tool-encounters/">🐉 Incontri</a>
+  <a href="https://dcamuti.github.io/dnd5e-tool-journal/">📖 Diario</a>
+</nav>
 <main>
   <div class="panel">
     <div class="biglogo">🎭</div>
@@ -126,6 +139,17 @@ label.fld span{display:block; font-size:.72rem; color:var(--muted); margin-botto
     <button class="btn" onclick="genNpc(true)">🎲×5 Genera lista rapida</button>
   </div>
 
+  <div class="panel" style="margin-top:18px">
+    <h2>🎲 Tabelle rapide da DM</h2>
+    <div class="hint">Un click, un'improvvisazione: nomi e dettagli pronti quando i giocatori escono dai binari.</div>
+    <button class="btn small" onclick="dmRoll('inn')">🏨 Locanda</button>
+    <button class="btn small" onclick="dmRoll('shop')">🛒 Bottega</button>
+    <button class="btn small" onclick="dmRoll('village')">🏘 Villaggio</button>
+    <button class="btn small" onclick="dmRoll('ship')">⛵ Nave</button>
+    <button class="btn small" onclick="dmRoll('weather')">🌦 Meteo</button>
+    <button class="btn small" onclick="dmRoll('travel')">🧭 Evento di viaggio</button>
+    <div id="dmLog" style="margin-top:12px"></div>
+  </div>
   <div id="quickList"></div>
 
   <div class="npc-wrap" id="npcWrap" style="display:none">
@@ -326,6 +350,33 @@ const SB={
 "Archmage":{it:"Arcimago",size:"Medio",type:"umanoide",ac:"12 (15 con mage armor)",hp:"99 (18d8)",spd:"9 m",ab:[10,14,12,20,15,16],save:"Int +9, Sag +6",skill:"Arcano +13, Storia +13",res:"danni dagli incantesimi; contundenti, perforanti e taglienti non magici (da stoneskin)",sen:"Percezione passiva 12",lang:"sei lingue qualsiasi",cr:"12",xp:8400,tr:[["Resistenza alla Magia","Vantaggio ai TS contro incantesimi ed effetti magici."],["Incantesimi","Incantatore di 18° livello (Int, CD 17, +9). Trucchetti: fire bolt, light, mage hand, prestidigitation, shocking grasp. 1° (4): detect magic, identify, mage armor, magic missile. 2° (3): detect thoughts, mirror image, misty step. 3° (3): counterspell, fly, lightning bolt. 4° (3): banishment, fire shield, stoneskin. 5° (3): cone of cold, scrying, wall of force. 6° (1): globe of invulnerability. 7° (1): teleport. 8° (1): mind blank. 9° (1): time stop."]],act:[["Pugnale","Attacco con arma da mischia o a distanza: +6 al colpire, portata 1,5 m o gittata 6/18 m. Colpito: 4 (1d4+2) danni perforanti."]]}
 };
 
+/* ================= TABELLE RAPIDE DM ================= */
+const DM_T={
+ innA:["Grifone","Drago","Pony","Cinghiale","Corvo","Unicorno","Boccale","Calderone","Elmo","Scudo","Gatto","Troll","Barile","Falco","Nano","Fantasma","Ariete","Tasso"],
+ innB:["Ubriaco","Dorato","Ridente","Rampante","Arrugginito","Danzante","Silenzioso","Rosso","Errante","Fumante","Storto","Fortunato","Addormentato","Senza Testa","Generoso"],
+ innX:["la zuppa di cinghiale è famosa in tutta la valle","l'oste ascolta tutto e vende informazioni","c'è una rissa quasi ogni sera","una stanza è infestata, o così dicono","si gioca d'azzardo nel retro","il vino è annacquato ma la musica è ottima","è il ritrovo della gilda locale","un avventore fissa il party da quando è entrato"],
+ shopT:["Fabbro","Alchimista","Erborista","Sarto","Gioielliere","Cartografo","Macellaio","Libraio","Falegname","Mercante di curiosità","Conciatore","Fornaio"],
+ shopX:["prezzi onesti ma modi burberi","vende anche merce di dubbia provenienza","è in debito con la malavita","cerca qualcuno per una commissione rischiosa","ha un oggetto insolito in vetrina che non vuole vendere","parla malissimo del negozio concorrente","paga bene per materiali da mostro","il retrobottega nasconde più del dovuto"],
+ vilA:["Ponte","Vado","Colle","Borgo","Pietra","Selva","Riva","Campo","Torre","Rocca","Fonte","Passo"],
+ vilB:["chiaro","scuro","verde","vecchio","rosso","freddo","alto","lungo","muto","felice","spina","corvo"],
+ vilX:["famoso per il formaggio stagionato nelle grotte","il mulino è fermo da tre giorni, e nessuno sa perché","metà del villaggio non parla all'altra metà","il vecchio pozzo è transennato da anni","si prepara la festa del raccolto","le pecore spariscono una alla volta","il tempio ha un nuovo, giovanissimo sacerdote","i bambini raccontano di luci nel bosco"],
+ shipA:["La Sirena","Il Vento","La Fortuna","L'Aurora","Il Kraken","La Vedova","Il Delfino","La Tempesta","Il Gabbiano","La Lama"],
+ shipB:["d'Argento","del Nord","Ridente","Nera","Veloce","di Mezzanotte","Salata","degli Stolti","Scarlatta","Silenziosa"],
+ shipX:["il capitano non sale a terra da anni","trasporta un carico non dichiarato","metà ciurma è stata assoldata ieri","una figura incappucciata ha pagato per non fare domande","la polena porta fortuna, dicono; è stata rubata","cerca marinai: le paghe sono sospettosamente alte"],
+ weather:["Sereno e ventoso: viaggiare è piacevole.","Pioggia leggera e insistente: terreno fangoso, tracce facili da seguire.","Nebbia fitta fino a metà mattina: visibilità 18 m, percezione svantaggiata a vista.","Temporale in arrivo da ovest: entro sera servirà un riparo.","Caldo afoso: marce forzate più pesanti (rischio sfinimento).","Freddo pungente: senza equipaggiamento adatto, TS su Costituzione a fine giornata.","Cielo coperto e aria immobile: gli animali sono nervosi.","Grandine improvvisa per un'ora: cercare riparo o danni lievi.","Vento forte: tiri a distanza oltre metà gittata con svantaggio.","Giornata perfetta, quasi troppo: i superstiziosi la chiamano «quiete del drago»."],
+ travel:["Un carro rovesciato blocca la strada: il mercante offre una ricompensa per l'aiuto (o è un'esca).","Un mercante ambulante con merci curiose e una gran voglia di chiacchierare.","Tracce fresche e insolitamente grandi attraversano il sentiero.","Un ponte crollato: guado pericoloso o deviazione di mezza giornata.","Un viandante ferito chiede aiuto; il suo racconto non torna del tutto.","Colonna di fumo oltre la collina: un accampamento o un incendio.","Un santuario abbandonato sul ciglio della strada; qualcuno ci ha lasciato offerte fresche.","Esattori del pedaggio: sembrano ufficiali, forse lo sono davvero.","Un animale insolitamente docile segue il gruppo con insistenza.","Cadavere sul sentiero, spogliato di tutto tranne una lettera sigillata.","Un gruppo di pellegrini invita il party a condividere il fuoco e le voci che girano.","Nella notte, il suono di corni lontani: caccia o battaglia?"]};
+function dmRoll(t){
+  let txt="";
+  if(t==="inn")txt=`🏨 <b>Locanda «${R(["Il","Al"])} ${R(DM_T.innA)} ${R(DM_T.innB)}»</b> — ${R(DM_T.innX)}. Oste: ${R(NM.hum[R(["m","f"])])}.`;
+  else if(t==="shop")txt=`🛒 <b>${R(DM_T.shopT)}</b> di ${R(NM.hum[R(["m","f"])])} ${R(NM.hum.s)} — ${R(DM_T.shopX)}.`;
+  else if(t==="village")txt=`🏘 <b>${R(DM_T.vilA)}${R(DM_T.vilB)}</b> (${20+D(20)*15} anime) — ${R(DM_T.vilX)}.`;
+  else if(t==="ship")txt=`⛵ <b>«${R(DM_T.shipA)} ${R(DM_T.shipB)}»</b> — capitano ${R(NM.hum[R(["m","f"])])} ${R(NM.hum.s)}; ${R(DM_T.shipX)}.`;
+  else if(t==="weather")txt=`🌦 ${R(DM_T.weather)}`;
+  else if(t==="travel")txt=`🧭 ${R(DM_T.travel)}`;
+  const log=$("dmLog");
+  log.innerHTML=`<p style="padding:6px 0;border-bottom:1px dotted var(--border);font-size:.92rem">${txt}</p>`+log.innerHTML;
+  const ps=log.querySelectorAll("p");if(ps.length>8)ps[ps.length-1].remove();
+}
 /* ================= GENERAZIONE ================= */
 let N=null;
 function wPick(arr,wIdx){const tot=arr.reduce((t,x)=>t+x[wIdx],0);let r=Math.random()*tot;for(const x of arr){r-=x[wIdx];if(r<=0)return x}return arr[0]}
@@ -453,7 +504,7 @@ function exportMonster(){
   alert("🐉 File creato. Nel generatore incontri: 🛠 Homebrew → ⬆ Importa JSON, e l'NPC entra nel bestiario e nel tracker.");
 }
 /* backup suite */
-const SUITE_KEYS=["dnd5e_chars","dnd5e_draft","dnd5e_lang","dnd5e_npcs","enc_src","enc_saved","enc_trk","enc_hb"];
+const SUITE_KEYS=["dnd5e_chars","dnd5e_draft","dnd5e_lang","dnd5e_npcs","enc_src","enc_saved","enc_trk","enc_hb","dnd5e_diary"];
 function backupSuite(){
   const data={type:"dnd5e_suite_backup",date:new Date().toISOString(),store:{}};
   let n=0;SUITE_KEYS.forEach(k=>{try{const v=localStorage.getItem(k);if(v!=null){data.store[k]=v;n++}}catch(e){}});
