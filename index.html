@@ -158,6 +158,8 @@ const R=a=>a[Math.floor(Math.random()*a.length)];
 const D=n=>Math.floor(Math.random()*n)+1;
 function lsGet(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+/* conserva la posizione di scorrimento durante i re-render */
+function ks(){const y=window.scrollY;requestAnimationFrame(()=>window.scrollTo(0,y))}
 
 /* ================= RAZZE (stesse fonti del generatore schede) ================= */
 /* [en, it, gruppoNomi, peso, note tratti razziali] */
@@ -364,6 +366,7 @@ function reroll(f){
 }
 function render(){
   if(!N)return;
+  ks();
   $("npcWrap").style.display="grid";
   const d=$("dossier");
   const rr=f=>`<span class="rr" onclick="reroll('${f}')" title="Rigenera questa sezione">🎲</span>`;
