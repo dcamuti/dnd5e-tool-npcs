@@ -134,6 +134,7 @@ label.fld span{display:block; font-size:.72rem; color:var(--muted); margin-botto
       <div class="toolbar">
         <button class="btn gold" onclick="saveNpc()">💾 Salva NPC</button>
         <button class="btn" onclick="exportNpc()">⬇ Esporta JSON</button>
+        <button class="btn" onclick="exportMonster()" title="Genera un file da importare nel Bestiario Homebrew del generatore incontri">🐉 Esporta per il bestiario</button>
         <button class="btn" onclick="genNpc()">🎲 Rigenera tutto</button>
       </div>
     </div>
@@ -146,7 +147,9 @@ label.fld span{display:block; font-size:.72rem; color:var(--muted); margin-botto
     <h2>📂 NPC salvati</h2>
     <div class="hint" style="color:var(--muted);font-size:.85rem;margin-bottom:10px">Salvati nel browser (localStorage). Usa Esporta/Importa JSON per backup.</div>
     <table style="width:100%;border-collapse:collapse" id="savedList"></table>
-    <div class="toolbar"><button class="btn" onclick="closeSaved()">Chiudi</button></div>
+    <div class="toolbar"><button class="btn" onclick="backupSuite()">🗄 Backup suite</button>
+     <label class="btn" style="cursor:pointer">⬆ Ripristina backup<input type="file" accept=".json" style="display:none" onchange="if(this.files[0])restoreSuite(this.files[0]);this.value=''"></label>
+     <button class="btn" onclick="closeSaved()">Chiudi</button></div>
   </div>
 </div>
 <input type="file" id="impFile" accept=".json" style="display:none">
@@ -433,6 +436,42 @@ function exportNpc(id){
   const blob=new Blob([JSON.stringify(n,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);
   a.download=(n.name||"npc").replace(/\s+/g,"_")+".json";a.click();
+}
+/* export in formato bestiario (Homebrew del generatore incontri) */
+function exportMonster(){
+  if(!N)return;const m=SB[N.sb];if(!m)return;
+  const out={n:N.name+" — "+m.it,it:N.name,src:"HB",cr:m.cr,
+    sz:m.size,tp:"umanoide ("+N.race+")",al:(N.align||"neutrale").toLowerCase(),
+    ac:m.ac,hp:m.hp,spd:m.spd,ab:m.ab.slice(),
+    sen:m.sen,lg:m.lang,env:["qualsiasi"],
+    tr:(m.tr||[]).concat([["Tratti razziali ("+N.race+")",N.raceNote],["Ruolo",N.occ+" ("+N.cat+"). "+cap(N.tratto)+"."]]),
+    act:(m.act||[]).slice(),rea:(m.rea||[]).slice()};
+  if(m.save)out.sv=m.save;if(m.skill)out.sk=m.skill;if(m.res)out.res=m.res;
+  const blob=new Blob([JSON.stringify(out,null,1)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download=(N.name||"npc").replace(/\s+/g,"_")+"_bestiario.json";a.click();
+  alert("🐉 File creato. Nel generatore incontri: 🛠 Homebrew → ⬆ Importa JSON, e l'NPC entra nel bestiario e nel tracker.");
+}
+/* backup suite */
+const SUITE_KEYS=["dnd5e_chars","dnd5e_draft","dnd5e_lang","dnd5e_npcs","enc_src","enc_saved","enc_trk","enc_hb"];
+function backupSuite(){
+  const data={type:"dnd5e_suite_backup",date:new Date().toISOString(),store:{}};
+  let n=0;SUITE_KEYS.forEach(k=>{try{const v=localStorage.getItem(k);if(v!=null){data.store[k]=v;n++}}catch(e){}});
+  if(!n){alert("Nulla da salvare.");return}
+  const blob=new Blob([JSON.stringify(data)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="dnd5e_suite_backup_"+new Date().toISOString().slice(0,10)+".json";a.click();
+}
+function restoreSuite(file){
+  const rd=new FileReader();
+  rd.onload=()=>{try{
+    const d=JSON.parse(rd.result);
+    if(d.type!=="dnd5e_suite_backup"||!d.store)throw 0;
+    if(!confirm("Ripristinare il backup? I dati attuali di questo browser verranno sovrascritti."))return;
+    for(const k in d.store)localStorage.setItem(k,d.store[k]);
+    alert("✅ Backup ripristinato. La pagina verrà ricaricata.");location.reload();
+  }catch(err){alert("File di backup non valido.")}};
+  rd.readAsText(file);
 }
 function importNpc(){$("impFile").click()}
 $("impFile").addEventListener("change",e=>{
