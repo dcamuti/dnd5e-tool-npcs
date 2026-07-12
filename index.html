@@ -90,7 +90,8 @@ label.fld span{display:block; font-size:.72rem; color:var(--muted); margin-botto
 .modal-box h2{color:var(--gold-l); font-size:1.25rem; margin-bottom:10px}
 #savedList td{padding:7px 5px; border-bottom:1px solid var(--border); font-size:.9rem}
 #savedList th{padding:4px 5px; text-align:left; color:var(--gold); font-size:.72rem; text-transform:uppercase; letter-spacing:1.5px; font-family:var(--font-display)}
-.toolbar{display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 0}
+.toolbar{display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 0; align-items:center}
+.sep{display:inline-block; vertical-align:middle; width:1px; height:24px; background:var(--border); margin:0 4px; flex:none}
 .biglogo{font-size:3rem; text-align:center; margin-bottom:6px}
 .suite-nav{max-width:1180px; margin:14px auto -8px; padding:0 20px; display:flex; gap:8px; flex-wrap:wrap; align-items:center}
 .suite-nav .sn-lbl{font-family:var(--font-display); font-size:.68rem; letter-spacing:2px; color:var(--muted)}
@@ -111,8 +112,10 @@ label.fld span{display:block; font-size:.72rem; color:var(--muted); margin-botto
   <h1>🎭 Generatore NPC D&amp;D 5E <small>Improvvisazione istantanea per Dungeon Master</small></h1>
   <div>
     <button class="btn" onclick="openSaved()">📂 NPC salvati</button>
-    <button class="btn" onclick="window.print()">🖨️ Stampa</button>
     <button class="btn" id="impBtn" onclick="importNpc()">⬆ Importa JSON</button>
+    <span class="sep"></span>
+    <button class="btn" onclick="window.print()">🖨️ Stampa</button>
+    <span class="sep"></span>
     <button class="btn gold" onclick="genNpc()">🎲 Genera NPC</button>
   </div>
 </header>
@@ -157,9 +160,10 @@ label.fld span{display:block; font-size:.72rem; color:var(--muted); margin-botto
       <div class="dossier" id="dossier"></div>
       <div class="toolbar">
         <button class="btn gold" onclick="saveNpc()">💾 Salva NPC</button>
+        <button class="btn" onclick="genNpc()">🎲 Rigenera tutto</button>
+        <span class="sep"></span>
         <button class="btn" onclick="exportNpc()">⬇ Esporta JSON</button>
         <button class="btn" onclick="exportMonster()" title="Genera un file da importare nel Bestiario Homebrew del generatore incontri">🐉 Esporta per il bestiario</button>
-        <button class="btn" onclick="genNpc()">🎲 Rigenera tutto</button>
       </div>
     </div>
     <div id="sbPane"></div>
