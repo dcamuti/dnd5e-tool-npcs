@@ -405,17 +405,19 @@ function makeNpc(){
     segreto:R(P_SEGRETI), gancio:R(P_GANCI), atteggiamento:R(P_ATTEGG)
   };
 }
+let QL=[];
 function genNpc(list){
   $("quickList").innerHTML="";
   if(list===true){
+    QL=[];
     let h='<div class="panel" style="margin-top:18px"><h2>Lista rapida</h2><div class="hint">Cinque spunti immediati: clicca 🔍 per aprire un NPC completo basato su quella riga.</div>';
-    for(let i=0;i<5;i++){const q=makeNpc();
-      h+=`<p style="padding:7px 0;border-bottom:1px dotted var(--border);font-size:.93rem">🎭 <b style="color:var(--gold-l)">${q.name}</b> — ${q.race} ${q.sex==="f"?"♀":"♂"}, ${q.occ}. <i style="color:var(--muted)">${q.tratto}.</i> <button class="btn small" onclick='showNpc(${JSON.stringify(JSON.stringify(q))})'>🔍 Apri</button></p>`}
+    for(let i=0;i<5;i++){const q=makeNpc();QL.push(q);
+      h+=`<p style="padding:7px 0;border-bottom:1px dotted var(--border);font-size:.93rem">🎭 <b style="color:var(--gold-l)">${q.name}</b> — ${q.race} ${q.sex==="f"?"♀":"♂"}, ${q.occ}. <i style="color:var(--muted)">${q.tratto}.</i> <button class="btn small" onclick="showNpc(${i})">🔍 Apri</button></p>`}
     h+='</div>';$("quickList").innerHTML=h;$("npcWrap").style.display="none";return;
   }
   N=makeNpc();render();
 }
-function showNpc(js){N=JSON.parse(js);$("quickList").innerHTML="";render()}
+function showNpc(i){if(!QL[i])return;N=QL[i];$("quickList").innerHTML="";render()}
 function reroll(f){
   if(!N)return;
   const m={aspetto:()=>N.aspetto=[R(P_ASPETTO),R(P_ASPETTO)],tratto:()=>{N.tratto=R(P_TRATTI);N.voce=R(P_VOCE)},motiv:()=>{N.ideale=R(P_IDEALI);N.legame=R(P_LEGAMI);N.difetto=R(P_DIFETTI)},segreto:()=>N.segreto=R(P_SEGRETI),gancio:()=>N.gancio=R(P_GANCI),att:()=>N.atteggiamento=R(P_ATTEGG),
