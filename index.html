@@ -164,6 +164,7 @@ label.fld span{display:block; font-size:.72rem; color:var(--muted); margin-botto
         <span class="sep"></span>
         <button class="btn" onclick="exportNpc()">⬇ Esporta JSON</button>
         <button class="btn" onclick="exportMonster()" title="Genera un file da importare nel Bestiario Homebrew del generatore incontri">🐉 Esporta per il bestiario</button>
+        <button class="btn" onclick="shareNpc()" title="Copia un link che contiene l'NPC: chi lo apre se lo ritrova caricato">🔗 Link</button>
       </div>
     </div>
     <div id="sbPane"></div>
@@ -538,11 +539,30 @@ $("impFile").addEventListener("change",e=>{
   rd.readAsText(f);e.target.value="";
 });
 
+/* ================= LINK CONDIVISIBILE ================= */
+const b64e=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+const b64d=s=>JSON.parse(decodeURIComponent(escape(atob(s))));
+function shareNpc(){
+  if(!N)return;
+  const url=location.href.split("#")[0]+"#npc="+b64e(N);
+  if(navigator.clipboard&&navigator.clipboard.writeText)
+    navigator.clipboard.writeText(url).then(()=>alert("🔗 Link copiato negli appunti.")).catch(()=>prompt("Copia il link:",url));
+  else prompt("Copia il link:",url);
+}
 /* ================= INIT ================= */
 (function(){
   $("fRace").innerHTML+=NRACES.map(r=>`<option value="${r[0]}">${r[1]}</option>`).join("");
   $("fCat").innerHTML+=CATS.map(c=>`<option value="${c[0]}">${c[0]}</option>`).join("");
   $("fAl").innerHTML+=ALIGNS.map(a=>`<option>${a}</option>`).join("");
+  if(location.hash.indexOf("#npc=")===0){
+    try{
+      const o=b64d(location.hash.slice(5));
+      if(o&&o.name&&o.sb&&confirm(`Questo link contiene l'NPC «${o.name}». Aprirlo?`)){
+        N=o;render();
+      }
+      history.replaceState(null,"",location.pathname+location.search);
+    }catch(e){}
+  }
 })();
 </script>
 </body>
